@@ -226,8 +226,8 @@ paths:
               $ref: '#/components/schemas/Holding-Update'
 components:
   schemas:
-    Portfolio-List:
-      title: Portfolio-List
+    PortfolioList:
+      title: PortfolioList
       type: object
       properties:
         id:
@@ -264,7 +264,7 @@ components:
           type: string
           maxLength: 500
         owner:
-          $ref: ../models/owner.yaml
+          $ref: '#/components/schemas/Owner'
       required:
         - name
         - description
@@ -280,7 +280,7 @@ components:
         description:
           type: string
         owner:
-          $ref: ../models/owner.yaml
+          $ref: '#/components/schemas/Owner'
         holdings:
           type: array
           items:

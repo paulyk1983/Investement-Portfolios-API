@@ -18,6 +18,8 @@
   "homepage": "https://github.com/paulyk1983/Investement-Portfolios-API#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "mongoose": "^5.9.16",
     "nodemon": "^2.0.4"
   }
 }

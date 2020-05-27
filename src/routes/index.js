@@ -1,5 +1,6 @@
 var express = require('express')
 var router = express.Router()
+var portfoliosController = require('../controllers/portfolios.js')
 
 // middleware that is specific to this router
 // router.use(function timeLog (req, res, next) {
@@ -9,11 +10,11 @@ var router = express.Router()
 
 // PORTFOLIOS:
 router.get('/portfolios', function (req, res) {
-    res.send('list of portfolios')
+    portfoliosController.getPortfolios(req, res)
 })
 
 router.post('/portfolios', function (req, res) {
-    res.send('Create a portfolio')
+    portfoliosController.getPortfolios(req, res)
 })
 
 router.get('/portfolios/:portfolioId', function (req, res) {
