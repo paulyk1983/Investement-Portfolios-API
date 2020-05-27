@@ -1,0 +1,304 @@
+openapi: 3.0.0
+info:
+  title: Portfolios API
+  version: '1.0'
+  description: Track and manage investment portfolios and holdings.
+  contact:
+    name: Paul Krajewski
+    email: paulyk1983@gmail.com
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /portfolios:
+    get:
+      summary: Get a list of portfolios
+      tags:
+        - Portfolio
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Portfolio-List'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: ../models/error-response.yaml
+        '500':
+          description: Internal Server Error
+    post:
+      summary: Create a portfolio
+      tags:
+        - Portfolio
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Portfolio-Write'
+  '/portolios/{portfolioId}':
+    parameters:
+      - type: string
+        name: portfolioId
+        in: path
+        required: true
+    get:
+      summary: Get portfolio details
+      tags:
+        - Portfolio
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Portfolio-Details'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: ../models/error-response.yaml
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      summary: Update portfolio details
+      tags:
+        - Portfolio
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Portfolio-Write'
+    delete:
+      summary: Delete a portfolio
+      tags:
+        - Portfolio
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  '/portfolios/{portfolioId}/holdings':
+    parameters:
+      - type: string
+        name: portfolioId
+        in: path
+        required: true
+    post:
+      summary: Add a holding
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Holding-Create'
+      tags:
+        - Holding
+  '/portfolios/{portfolioId}/holdings/{holdingId}':
+    parameters:
+      - type: string
+        name: portfolioId
+        in: path
+        required: true
+      - type: string
+        name: holdingId
+        in: path
+        required: true
+    get:
+      summary: Get holding details
+      tags:
+        - Holding
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Holding-Read'
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: Delete a holding
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      tags:
+        - Holding
+    put:
+      summary: Update a holding
+      tags:
+        - Holding
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Holding-Update'
+components:
+  schemas:
+    Portfolio-List:
+      title: Portfolio-List
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        owner:
+          $ref: ../models/owner.yaml
+        links:
+          type: object
+          required:
+            - self
+          properties:
+            self:
+              type: string
+              description: Relative path for fetching portfolio details
+      required:
+        - id
+        - name
+        - description
+        - owner
+        - links
+    Portfolio-Write:
+      title: Portfolio-Write
+      type: object
+      description: Model for creating and updating a portfolio
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        owner:
+          $ref: ../models/owner.yaml
+      required:
+        - name
+        - description
+        - owner
+    Portfolio-Details:
+      title: Portfolio-Details
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        owner:
+          $ref: ../models/owner.yaml
+        holdings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Holding-Read'
+      required:
+        - id
+        - name
+        - description
+        - owner
+        - holdings
+    Holding-Update:
+      title: Holding-Update
+      type: object
+      description: ''
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        quantity:
+          type: integer
+        stopLossType:
+          type: string
+          enum:
+            - trailing
+            - hard
+        stopLossPercent:
+          type: integer
+        stopLossPrice:
+          type: number
+        notes:
+          type: string
+        price:
+          type: number
+      required:
+        - name
+        - description
+        - quantity
+    Holding-Create:
+      title: Holding-Create
+      allOf:
+        - type: object
+          properties:
+            ticker:
+              type: string
+              maxLength: 5
+          required:
+            - ticker
+        - $ref: '#/components/schemas/Holding-Update'
+    Holding-Read:
+      title: Holding-Read
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        - $ref: '#/components/schemas/Holding-Create'

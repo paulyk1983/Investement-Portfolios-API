@@ -1,0 +1,15 @@
+title: Error Response
+type: object
+properties:
+  status:
+    type: integer
+    minimum: 3
+    maximum: 3
+  title:
+    type: string
+  details:
+    type: string
+required:
+  - status
+  - title
+  - details
