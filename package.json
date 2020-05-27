@@ -4,6 +4,7 @@
   "description": "hello world",
   "main": "app.js",
   "scripts": {
+    "start": "src/app.js",
     "test": "test"
   },
   "repository": {
