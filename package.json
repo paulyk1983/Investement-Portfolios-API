@@ -1,0 +1,22 @@
+{
+  "name": "portfolios-api",
+  "version": "1.0.0",
+  "description": "hello world",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulyk1983/Investement-Portfolios-API.git"
+  },
+  "author": "Paul Krajewski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulyk1983/Investement-Portfolios-API/issues"
+  },
+  "homepage": "https://github.com/paulyk1983/Investement-Portfolios-API#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
