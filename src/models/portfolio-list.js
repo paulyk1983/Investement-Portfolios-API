@@ -1,15 +1,32 @@
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
-const portfolioListSchema = new Schema({
-    id: String,
-    name: String,
-    description: String,
+var portfolioListSchema = new Schema({
+    id: {
+        type: String,
+        default: null
+    },
+    name: {
+        type: String
+    },
+    description: {
+        type: String
+    },
     owner: {
         name: String
     }
-});
+})
 
-const PortfolioList = mongoose.model('PortfolioList', portfolioListSchema);
+portfolioListSchema.set('toJSON', {
+    transform: function(doc, ret) {
+       ret.id = ret._id
+       delete ret._id
+       delete ret.__v
+       return ret
+    }
+ })
 
-module.exports = {PortfolioList}
+
+const PortfolioList = mongoose.model('PortfolioList', portfolioListSchema, 'portfolios');
+
+module.exports = { PortfolioList }

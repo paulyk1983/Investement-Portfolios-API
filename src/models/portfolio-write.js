@@ -9,6 +9,6 @@ const portfolioWriteSchema = new Schema({
     }
 });
 
-const PortfolioWrite = mongoose.model('PortfolioWrite', portfolioWriteSchema);
+const PortfolioWrite = mongoose.model('PortfolioWrite', portfolioWriteSchema, 'portfolios');
 
 module.exports = {PortfolioWrite}

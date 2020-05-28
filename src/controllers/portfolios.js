@@ -1,12 +1,19 @@
-const { PortfolioList } = require('../models/portfolio-list')
-const { PortfolioWrite } = require('../models/portfolio-write')
+const {findAllPortfolios, createPortfolio} = require('../services/portfolio')
+
 
 const getPortfolios = async (req, res) => {
-    res.send("PortfolioList")
+
+    const portfolios = await findAllPortfolios()
+
+    res.status(200).json(portfolios)
 }
 
 const postPortfolios = async (req, res) => {
-    res.send("PortfolioWrite")
+    
+    const newPortfolio = await createPortfolio()
+    const portfolioId = newPortfolio[0]._id
+    
+    res.status(201).json({id:portfolioId})
 }
 
 module.exports = {getPortfolios, postPortfolios}

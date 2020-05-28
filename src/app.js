@@ -1,10 +1,28 @@
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 3000
+const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 const route = require('./routes/index.js')
+
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config()
+}
+
+const port = process.env.PORT || 3000
+
+mongoose.Promise = global.Promise;
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+
+app.use(bodyParser.urlencoded({ extended: false}))
+app.use(bodyParser.json())
 
 app.get('/', (req, res) => res.send('Welcome!!'))
 
 app.use('/', route)
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
+
+module.exports = app
