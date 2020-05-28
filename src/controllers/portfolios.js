@@ -8,11 +8,11 @@ const getPortfolios = async (req, res) => {
     res.status(200).json(portfolios)
 }
 
-const postPortfolios = async (req, res) => {
-    
-    const newPortfolio = await createPortfolio()
+const postPortfolios = async (requestBody, res) => {
+
+    const newPortfolio = await createPortfolio(requestBody)
     const portfolioId = newPortfolio[0]._id
-    
+
     res.status(201).json({id:portfolioId})
 }
 

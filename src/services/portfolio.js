@@ -8,15 +8,8 @@ const findAllPortfolios = async () => {
     return portfolios
 }
 
-const createPortfolio = async () => {
-    const testPortfolio = {
-        name: "test port",
-        description: "test descfiption yayadada",
-        owner: {
-            name: "Paul"
-        }
-    }
-    const newPortfolio = await PortfolioWrite.insertMany(testPortfolio)
+const createPortfolio = async (req) => {
+    const newPortfolio = await PortfolioWrite.insertMany(req)
 
     return newPortfolio
 }
