@@ -13,7 +13,8 @@ const environment = process.env.NODE_ENV
 const port = process.env.PORT || 3000
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING, {
+  useNewUrlParser: true}
 )
 
 app.use(bodyParser.urlencoded({ extended: false}))
