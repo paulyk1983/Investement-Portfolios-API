@@ -13,9 +13,10 @@ const getPortfolios = async (req, res) => {
     
 }
 
-const postPortfolios = async (requestBody, res) => {
+const postPortfolios = async (req, res) => {
     try {
-        //const newPortfolio = await createPortfolio(requestBody)
+        console.log(req)
+        const newPortfolio = await createPortfolio(req)
         //const portfolioId = newPortfolio[0]._id
 
         const portfolioId = "test"
