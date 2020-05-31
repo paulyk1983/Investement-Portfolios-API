@@ -3,15 +3,27 @@ const { PortfolioWrite } = require('../models/portfolio-write')
 
 
 const findAllPortfolios = async () => {
-    const portfolios = await PortfolioList.find()
+    try {
+        const portfolios = await PortfolioList.find()
 
-    return portfolios
+        return portfolios
+    } catch (error) {
+        console.log("Error on service layer")
+        console.log(error)
+    }
+    
 }
 
 const createPortfolio = async (req) => {
-    const newPortfolio = await PortfolioWrite.insertMany(req)
+    try {
+        const newPortfolio = await PortfolioWrite.insertMany(req)
 
-    return newPortfolio
+        return newPortfolio
+    } catch (error) {
+        console.log("Error on service layer")
+        console.log(error)
+    }
+    
 }
 
 module.exports = { findAllPortfolios, createPortfolio }
