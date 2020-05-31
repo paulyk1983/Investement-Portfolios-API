@@ -27,6 +27,6 @@ portfolioListSchema.set('toJSON', {
  })
 
 
-const PortfolioList = mongoose.model('PortfolioList', portfolioListSchema, 'portfolios');
+const PortfolioList = mongoose.model('PortfolioList', portfolioListSchema, 'portfolios')
 
 module.exports = { PortfolioList }

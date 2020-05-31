@@ -1,14 +1,20 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
-const portfolioWriteSchema = new Schema({
-    name: String,
-    description: String,
+var portfolioWriteSchema = new Schema({
+    name: {
+        type: String
+    },
+    description: {
+        tyep: String,
+    },
     owner: {
-        name: String
+        name: {
+            type: String
+        }
     }
 });
 
-const PortfolioWrite = mongoose.model('PortfolioWrite', portfolioWriteSchema, 'portfolios');
+const PortfolioWrite = mongoose.model('PortfolioWrite', portfolioWriteSchema, 'portfolios')
 
-module.exports = {PortfolioWrite}
+module.exports = { PortfolioWrite }
