@@ -44,8 +44,22 @@ const findPortfolioById = async (portfolioId) => {
     }
 }
 
+const deletePortfolioById = async (portfolioId) => {
+    const result = await findPortfolioById(portfolioId);
+    if (result.status == 404) {
+        return result
+    } else {
+        try {
+            await PortfolioList.findByIdAndDelete(portfolioId)
+            return {}
+        } catch (error) {
+            console.log("Error on service layer")
+        }
+    }
+}
+
 const notFoundErrorMessage = (id) => {
     return {"status":404, "title":"Not Found", "details":"Portfolio with Id " + id + " cannot be found"}
 }
 
-module.exports = { findAllPortfolios, createPortfolio, findPortfolioById }
+module.exports = { findAllPortfolios, createPortfolio, findPortfolioById, deletePortfolioById }

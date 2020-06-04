@@ -1,4 +1,4 @@
-const {findAllPortfolios, createPortfolio, findPortfolioById} = require('../services/portfolio')
+const {findAllPortfolios, createPortfolio, findPortfolioById, deletePortfolioById} = require('../services/portfolio')
 
 
 const getPortfolios = async (req, res) => {
@@ -26,17 +26,39 @@ const postPortfolios = async (req, res) => {
     
 }
 
-const getPortfolioById = async (req, res) => {
+const getPortfolio = async (req, res) => {
     try {
         const portfolioId = req.params.portfolioId
         
-        const portfolio = await findPortfolioById(portfolioId)
-       
-        res.status(200).json(portfolio)
+        const result = await findPortfolioById(portfolioId)
+
+        if (result.status == 404) {
+            res.status(404).json(result)
+        } else {
+            res.status(200).json(portfolio)
+        }
     } catch (error) {
         console.log("Error on controller layer")
         console.log(error)
     }
 }
-//
-module.exports = {getPortfolios, postPortfolios, getPortfolioById}
+
+const deletePortfolio = async (req, res) => {
+    try {
+        const portfolioId = req.params.portfolioId
+        
+        const result = await deletePortfolioById(portfolioId)
+        
+        if (result.status == 404) {
+            res.status(404).json(result)
+        } else {
+            res.sendStatus(204)
+        }
+       
+    } catch (error) {
+        console.log("Error on controller layer")
+        console.log(error)
+    }
+}
+
+module.exports = {getPortfolios, postPortfolios, getPortfolio, deletePortfolio}

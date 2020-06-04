@@ -18,7 +18,7 @@ router.post('/portfolios', function (req, res) {
 })
 
 router.get('/portfolios/:portfolioId', function (req, res) {
-    portfoliosController.getPortfolioById(req, res)
+    portfoliosController.getPortfolio(req, res)
 })
 
 router.put('/portfolios/:portfolioId:', function (req, res) {
@@ -26,7 +26,7 @@ router.put('/portfolios/:portfolioId:', function (req, res) {
 })
 
 router.delete('/portfolios/:portfolioId', function (req, res) {
-    res.send('Delete a portfolio')
+    portfoliosController.deletePortfolio(req, res)
 })
 
 
