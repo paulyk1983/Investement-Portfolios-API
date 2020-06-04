@@ -14,14 +14,9 @@ const port = process.env.PORT || 3000
 
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING, {
-  useUnifiedTopology: true,
+  useUnifiedTopology: true
+//useNewUrlParser: true -> when enabled, receiving the following error (in prod only): TypeError: Cannot read property 'map' of undefined
 })
-
-// GET PRODUCTION ERROR WHEN SETTING  useNewURLParser TO TRUE: TypeError: Cannot read property 'map' of undefined
-// mongoose.connect(process.env.MONGODB_CONNECTION_STRING, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
 
 app.use(bodyParser.urlencoded({ extended: false}))
 app.use(bodyParser.json())

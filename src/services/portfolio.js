@@ -23,7 +23,29 @@ const createPortfolio = async (req) => {
         console.log("Error on service layer")
         console.log(error)
     }
-    
 }
 
-module.exports = { findAllPortfolios, createPortfolio }
+const findPortfolioById = async (portfolioId) => {
+    try {
+        const portfolio = await PortfolioList.findById(portfolioId)
+
+        if (!portfolio) {
+            return notFoundErrorMessage(portfolioId)
+        } else {
+            return portfolio
+        }
+          
+    } catch (error) {
+        
+        console.log("Error on service layer")
+        if (error.kind == "ObjectId") {
+            return notFoundErrorMessage(portfolioId)
+        }
+    }
+}
+
+const notFoundErrorMessage = (id) => {
+    return {"status":404, "title":"Not Found", "details":"Portfolio with Id " + id + " cannot be found"}
+}
+
+module.exports = { findAllPortfolios, createPortfolio, findPortfolioById }

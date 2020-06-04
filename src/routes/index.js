@@ -18,7 +18,7 @@ router.post('/portfolios', function (req, res) {
 })
 
 router.get('/portfolios/:portfolioId', function (req, res) {
-    res.send('get portfolio by id')
+    portfoliosController.getPortfolioById(req, res)
 })
 
 router.put('/portfolios/:portfolioId:', function (req, res) {
