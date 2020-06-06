@@ -226,8 +226,8 @@ paths:
               $ref: '#/components/schemas/Holding-Update'
 components:
   schemas:
-    PortfolioList:
-      title: PortfolioList
+    Portfolio-List:
+      title: Portfolio-List
       type: object
       properties:
         id:
