@@ -44,6 +44,19 @@ const findPortfolioById = async (portfolioId) => {
     }
 }
 
+const updatePortfolioById = async (portfolio, id) => {
+    try {
+        const query = {_id:{$eq:id}}
+        const result = await PortfolioWrite.updateMany(query, portfolio)
+        
+        return result
+    } catch (error) {
+        console.log("Error on service layer")
+        console.log(error)
+    }
+    
+}
+
 const deletePortfolioById = async (portfolioId) => {
     const result = await findPortfolioById(portfolioId);
     if (result.status == 404) {
@@ -62,4 +75,4 @@ const notFoundErrorMessage = (id) => {
     return {"status":404, "title":"Not Found", "details":"Portfolio with Id " + id + " cannot be found"}
 }
 
-module.exports = { findAllPortfolios, createPortfolio, findPortfolioById, deletePortfolioById }
+module.exports = { findAllPortfolios, createPortfolio, findPortfolioById, deletePortfolioById, updatePortfolioById }

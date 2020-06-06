@@ -1,4 +1,4 @@
-const {findAllPortfolios, createPortfolio, findPortfolioById, deletePortfolioById} = require('../services/portfolio')
+const { findAllPortfolios, createPortfolio, findPortfolioById, deletePortfolioById, updatePortfolioById } = require('../services/portfolio')
 
 
 const getPortfolios = async (req, res) => {
@@ -30,12 +30,27 @@ const getPortfolio = async (req, res) => {
     try {
         const portfolioId = req.params.portfolioId
         
-        const result = await findPortfolioById(portfolioId)
+        const portfolio = await findPortfolioById(portfolioId)
 
-        if (result.status == 404) {
-            res.status(404).json(result)
+        if (portfolio.status == 404) {
+            res.status(404).json(portfolio)
         } else {
             res.status(200).json(portfolio)
+        }
+    } catch (error) {
+        console.log("Error on controller layer")
+        console.log(error)
+    }
+}
+
+const updatePortfolio = async (req, res) => {
+    try {
+        const portfolio = await updatePortfolioById(req.body, req.params.portfolioId)
+        
+        if (portfolio) {
+            res.sendStatus(204)
+        } else {
+            res.status(404).json(notFoundErrorMessage())
         }
     } catch (error) {
         console.log("Error on controller layer")
@@ -61,4 +76,8 @@ const deletePortfolio = async (req, res) => {
     }
 }
 
-module.exports = {getPortfolios, postPortfolios, getPortfolio, deletePortfolio}
+const notFoundErrorMessage = () => {
+    return {"status":404, "title":"Not Found", "details":"Portfolio with the specified id cannot be found"}
+}
+
+module.exports = { getPortfolios, postPortfolios, getPortfolio, deletePortfolio, updatePortfolio }

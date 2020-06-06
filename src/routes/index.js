@@ -21,8 +21,8 @@ router.get('/portfolios/:portfolioId', function (req, res) {
     portfoliosController.getPortfolio(req, res)
 })
 
-router.put('/portfolios/:portfolioId:', function (req, res) {
-    res.send('Update a portfolio')
+router.put('/portfolios/:portfolioId', function (req, res) {
+    portfoliosController.updatePortfolio(req, res)
 })
 
 router.delete('/portfolios/:portfolioId', function (req, res) {
@@ -31,21 +31,21 @@ router.delete('/portfolios/:portfolioId', function (req, res) {
 
 
 // HOLDINGS:
-router.post('/portfolios/:portfolioId/holdings', function (req, res) {
-    res.send('adds a holding')
-})
+// router.post('/portfolios/:portfolioId/holdings', function (req, res) {
+//     res.send('adds a holding')
+// })
 
-router.get('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
-    res.send('get holdings details')
-})
+// router.get('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
+//     res.send('get holdings details')
+// })
 
-router.put('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
-    res.send('update holdings details')
-})
+// router.put('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
+//     res.send('update holdings details')
+// })
 
-router.delete('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
-    res.send('deletes holding')
-})
+// router.delete('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
+//     res.send('deletes holding')
+// })
 
 
 module.exports = router
