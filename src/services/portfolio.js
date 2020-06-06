@@ -58,16 +58,11 @@ const updatePortfolioById = async (portfolio, id) => {
 }
 
 const deletePortfolioById = async (portfolioId) => {
-    const result = await findPortfolioById(portfolioId);
-    if (result.status == 404) {
-        return result
-    } else {
-        try {
-            await PortfolioList.findByIdAndDelete(portfolioId)
-            return {}
-        } catch (error) {
-            console.log("Error on service layer")
-        }
+    try {
+        await PortfolioList.findByIdAndDelete(portfolioId)
+        return {}
+    } catch (error) {
+        console.log("Error on service layer")
     }
 }
 

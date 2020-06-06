@@ -60,15 +60,10 @@ const updatePortfolio = async (req, res) => {
 
 const deletePortfolio = async (req, res) => {
     try {
-        const portfolioId = req.params.portfolioId
-        
+        const portfolioId = req.params.portfolioId 
         const result = await deletePortfolioById(portfolioId)
-        
-        if (result.status == 404) {
-            res.status(404).json(result)
-        } else {
-            res.sendStatus(204)
-        }
+
+        res.sendStatus(204)
        
     } catch (error) {
         console.log("Error on controller layer")
