@@ -6,8 +6,9 @@ const { PortfolioDetails } = require('../models/portfolio-detail')
 const findAllPortfolios = async () => {
     try {
         const portfolios = await PortfolioList.find()
+        const response = {data: portfolios}
 
-        return portfolios
+        return response
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
