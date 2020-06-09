@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
-var portfoliosController = require('../controllers/portfolios.js')
+var portfoliosController = require('../controllers/portfolios')
+var holdingsController = require('../controllers/holdings')
 
 // middleware that is specific to this router
 // router.use(function timeLog (req, res, next) {
@@ -32,19 +33,19 @@ router.delete('/portfolios/:portfolioId', function (req, res) {
 
 // HOLDINGS:
 router.post('/portfolios/:portfolioId/holdings', function (req, res) {
-    res.send('adds a holding')
+    holdingsController.postHoldings(req, res)
 })
 
 router.get('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
-    res.send('get holdings details')
+    holdingsController.getHolding(req, res)
 })
 
 router.put('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
-    res.send('update holdings details')
+    holdingsController.updateHolding(req, res)
 })
 
 router.delete('/portfolios/:portfolioId/holdings/:holdingId', function (req, res) {
-    res.send('deletes holding')
+    holdingsController.deleteHolding(req, res)
 })
 
 
