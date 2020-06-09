@@ -32,10 +32,10 @@ const getPortfolio = async (req, res) => {
         
         const portfolio = await findPortfolioById(portfolioId)
 
-        if (portfolio.status == 404) {
-            res.status(404).json(portfolio)
-        } else {
+        if (portfolio) {
             res.status(200).json(portfolio)
+        } else {
+            res.status(404).json(notFoundErrorMessage())
         }
     } catch (error) {
         console.log("Error on controller layer")
