@@ -1,5 +1,6 @@
 const { PortfolioList } = require('../models/portfolio-list')
 const { PortfolioWrite } = require('../models/portfolio-write')
+const { PortfolioDetails } = require('../models/portfolio-detail')
 
 
 const findAllPortfolios = async () => {
@@ -27,8 +28,8 @@ const createPortfolio = async (req) => {
 
 const findPortfolioById = async (portfolioId) => {
     try {
-        const portfolio = await PortfolioList.findById(portfolioId)
-
+        const portfolio = await PortfolioDetails.findById(portfolioId)
+        
         if (!portfolio) {
             return notFoundErrorMessage(portfolioId)
         } else {

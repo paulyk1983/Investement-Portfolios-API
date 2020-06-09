@@ -48,4 +48,4 @@ holdingReadSchema.set('toJSON', {
 
 const HoldingRead = mongoose.model('HoldingRead', holdingReadSchema, 'holdings')
 
-module.exports = { HoldingRead }
+module.exports = { holdingReadSchema, HoldingRead }
