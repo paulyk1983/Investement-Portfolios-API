@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const { holdingReadSchema } = require('./holding-read')
 
+
 var portfolioDetailsSchema = new Schema({
     id: {
         type: String,

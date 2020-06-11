@@ -1,18 +1,27 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
+const { holdingCreateSchema } = require('./holding-create')
 
 var portfolioWriteSchema = new Schema({
     name: {
-        type: String
+        type: String,
+        required: true
     },
     description: {
-        tyep: String,
+        type: String,
+        required: true
     },
     owner: {
-        name: {
-            type: String
+        type: Object,
+        required: true,
+        properties: {
+            name:{
+                type: String,
+                required: true
+            }
         }
-    }
+    },
+    holdings: [holdingCreateSchema]
 });
 
 const PortfolioWrite = mongoose.model('PortfolioWrite', portfolioWriteSchema, 'portfolios')

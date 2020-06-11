@@ -1,12 +1,11 @@
-const { createHolding, findHoldingById, updateHoldingById, deleteHoldingById } = require('../services/holdings')
+const { addHoldingToPortfolio, findHoldingById, updateHoldingById, deleteHoldingById } = require('../services/holdings')
 
 const postHoldings = async (req, res) => {
     try {
-        const newHolding = await createHolding(req)
-        // const holdingId = newHolding[0]._id
-
-        // res.status(201).json({id:holdingId})
-        res.sendStatus(201)
+        const portfolioId = req.params.portfolioId
+        const result = await addHoldingToPortfolio(req.body, portfolioId)
+       
+        res.status(201).json(result)
     } catch (error) {
         console.log("Error on controller layer")
         console.log(error)

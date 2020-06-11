@@ -6,12 +6,6 @@ var holdingReadSchema = new Schema({
         type: String,
         default: null
     },
-    name: {
-        type: String
-    },
-    description: {
-        type: String
-    },
     ticker: {
         type: String
     },

@@ -6,9 +6,8 @@ const { PortfolioDetails } = require('../models/portfolio-detail')
 const findAllPortfolios = async () => {
     try {
         const portfolios = await PortfolioList.find()
-        const response = {data: portfolios}
 
-        return response
+        return portfolios
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
@@ -35,6 +34,7 @@ const findPortfolioById = async (portfolioId) => {
     } catch (error) {
         
         console.log("Error on service layer")
+        console.log(error)
         if (error.kind == "ObjectId") {
             return null
         }
@@ -44,9 +44,9 @@ const findPortfolioById = async (portfolioId) => {
 const updatePortfolioById = async (portfolio, id) => {
     try {
         const query = {_id:{$eq:id}}
-        const result = await PortfolioWrite.updateMany(query, portfolio)
+        const updatedPortfolio = await PortfolioWrite.updateMany(query, portfolio)
         
-        return result
+        return updatedPortfolio
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)

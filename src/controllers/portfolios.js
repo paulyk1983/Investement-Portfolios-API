@@ -4,11 +4,13 @@ const { findAllPortfolios, createPortfolio, findPortfolioById, deletePortfolioBy
 const getPortfolios = async (req, res) => {
     try {
         const portfolios = await findAllPortfolios()
+        const response = {data:portfolios}
 
-        res.status(200).json(portfolios)
+        res.status(200).json(response)
     } catch (error) {
         console.log("Error on controller layer")
         console.log(error)
+        res.sendStatus(500)
     }   
 }
 
@@ -21,6 +23,7 @@ const postPortfolios = async (req, res) => {
     } catch (error) {
         console.log("Error on controller layer")
         console.log(error)
+        res.sendStatus(500)
     }  
 }
 
@@ -31,13 +34,16 @@ const getPortfolio = async (req, res) => {
         const portfolio = await findPortfolioById(portfolioId)
 
         if (portfolio) {
-            res.status(200).json(portfolio)
+            const response = {data: portfolios}
+            res.status(200).json(response)
         } else {
-            res.status(404).json(notFoundErrorMessage())
+            const response = notFoundErrorMessage()
+            res.status(404).json(response)
         }
     } catch (error) {
         console.log("Error on controller layer")
         console.log(error)
+        res.sendStatus(500)
     }
 }
 
@@ -48,24 +54,27 @@ const updatePortfolio = async (req, res) => {
         if (portfolio) {
             res.sendStatus(204)
         } else {
-            res.status(404).json(notFoundErrorMessage())
+            const response = notFoundErrorMessage()
+            res.status(404).json(response)
         }
     } catch (error) {
         console.log("Error on controller layer")
         console.log(error)
+        res.sendStatus(500)
     }
 }
 
 const deletePortfolio = async (req, res) => {
     try {
         const portfolioId = req.params.portfolioId 
-        const result = await deletePortfolioById(portfolioId)
+        await deletePortfolioById(portfolioId)
 
         res.sendStatus(204)
        
     } catch (error) {
         console.log("Error on controller layer")
         console.log(error)
+        res.sendStatus(500)
     }
 }
 

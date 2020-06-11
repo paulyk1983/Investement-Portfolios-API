@@ -2,12 +2,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 var holdingCreateSchema = new Schema({
-    name: {
-        type: String
-    },
-    description: {
-        type: String
-    },
     ticker: {
         type: String
     },
@@ -21,9 +15,6 @@ var holdingCreateSchema = new Schema({
     stopLossPercent: {
         type: Number
     },
-    stopLossPrice: {
-        type: Number
-    },
     notes: {
         type: String
     },
@@ -33,6 +24,4 @@ var holdingCreateSchema = new Schema({
 })
 
 
-const HoldingCreate = mongoose.model('HoldingCreate', holdingCreateSchema, 'holdings')
-
-module.exports = { HoldingCreate }
+module.exports = { holdingCreateSchema }

@@ -1,11 +1,18 @@
-const { HoldingCreate } = require('../models/holding-create')
 const { HoldingRead } = require('../models/holding-read')
 const { HoldingUpdate } = require('../models/holding-update')
+const { PortfolioWrite } = require('../models/portfolio-write')
+const portfolioService = require('./portfolios')
 
-const createHolding = async () => {
+
+const addHoldingToPortfolio = async (holding, portfolioId) => {
     try {
-        console.log('create holding')
-        return {}
+        const portfolio = await portfolioService.findPortfolioById(portfolioId)
+        portfolio.holdings.push(holding)
+
+        const query = {_id:{$eq:portfolioId}}
+        const updatedPortfolio = await PortfolioWrite.updateMany(query, portfolio)
+
+        return updatedPortfolio
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
@@ -43,4 +50,4 @@ const deleteHoldingById = async () => {
 }
 
 
-module.exports = { createHolding, findHoldingById, updateHoldingById, deleteHoldingById }
+module.exports = { addHoldingToPortfolio, findHoldingById, updateHoldingById, deleteHoldingById }

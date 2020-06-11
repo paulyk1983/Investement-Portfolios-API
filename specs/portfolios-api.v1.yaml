@@ -296,12 +296,6 @@ components:
       type: object
       description: ''
       properties:
-        name:
-          type: string
-          maxLength: 100
-        description:
-          type: string
-          maxLength: 500
         quantity:
           type: integer
         stopLossType:
@@ -311,15 +305,11 @@ components:
             - hard
         stopLossPercent:
           type: integer
-        stopLossPrice:
-          type: number
         notes:
           type: string
         price:
           type: number
       required:
-        - name
-        - description
         - quantity
     Holding-Create:
       title: Holding-Create
