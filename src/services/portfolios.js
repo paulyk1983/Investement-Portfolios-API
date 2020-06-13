@@ -5,7 +5,7 @@ const { PortfolioDetails } = require('../models/portfolio-detail')
 
 const findAllPortfolios = async () => {
     try {
-        const portfolios = await PortfolioList.find()
+        const portfolios = await PortfolioList.find().select('-holdings')
 
         return portfolios
     } catch (error) {
