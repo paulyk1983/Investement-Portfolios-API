@@ -1,6 +1,7 @@
 const { HoldingRead } = require('../models/holding-read')
 const { HoldingUpdate } = require('../models/holding-update')
 const { PortfolioWrite } = require('../models/portfolio-write')
+const { PortfolioDetails } = require('../models/portfolio-detail')
 const portfolioService = require('./portfolios')
 
 
@@ -19,10 +20,14 @@ const addHoldingToPortfolio = async (holding, portfolioId) => {
     }  
 }
 
-const findHoldingById = async () => {
+const findHoldingById = async (portfolioId, holdingId) => {
     try {
-        console.log('find holding by id')
-        return {}
+        const portfolio = await PortfolioDetails.findById(portfolioId).select('holdings')
+        const targetHolding = portfolio.holdings.filter(holding => {
+            return holding._id == holdingId
+        })
+       
+        return targetHolding[0]
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
