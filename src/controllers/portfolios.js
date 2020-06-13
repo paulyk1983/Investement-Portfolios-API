@@ -34,7 +34,7 @@ const getPortfolio = async (req, res) => {
         const portfolio = await findPortfolioById(portfolioId)
 
         if (portfolio) {
-            const response = {data: portfolios}
+            const response = {data: portfolio}
             res.status(200).json(response)
         } else {
             const response = notFoundErrorMessage()
