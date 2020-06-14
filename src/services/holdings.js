@@ -34,9 +34,33 @@ const findHoldingById = async (portfolioId, holdingId) => {
     }  
 }
 
-const updateHoldingById = async () => {
+const updateHoldingById = async (portfolioId, holdingId, holding) => {
     try {
-        console.log('update holding')
+        // GET TARGET HOLDING INDEX FOR QUERY
+        var holdingIndex = 0
+        var holdingTicker = ""
+        const portfolioHoldings = await PortfolioDetails.findById(portfolioId).select('holdings')
+        for (i = 0; i < portfolioHoldings.holdings.length; i++) {
+            if (portfolioHoldings.holdings[i]._id == holdingId) {
+                holdingIndex = i
+                holdingTicker = portfolioHoldings.holdings[i].ticker
+                break
+            }
+        }
+        
+        // BUILD VALUE FOR $set
+        holding._id = holdingId
+        holding.ticker = holdingTicker
+        const holdingStr = JSON.stringify(holding)
+        const setQueryKeyString = '{"holdings.'+holdingIndex+'":'+holdingStr+'}'
+        const setQuery = JSON.parse(setQueryKeyString)
+        
+        // UPDATE PORTFOLIO WITH UPDATED HOLDING
+        await PortfolioWrite.updateOne( 
+            { _id: portfolioId }, 
+            { $set: setQuery }
+        )
+   
         return {}
     } catch (error) {
         console.log("Error on service layer")

@@ -17,7 +17,7 @@ const getHolding = async (req, res) => {
         const portfolioId = req.params.portfolioId
         const holdingId = req.params.holdingId
         const holding = await findHoldingById(portfolioId, holdingId)
-        
+
         res.status(200).json(holding)
     } catch (error) {
         console.log("Error on controller layer")
@@ -27,7 +27,11 @@ const getHolding = async (req, res) => {
 
 const updateHolding = async (req, res) => {
     try {
-        const result = await updateHoldingById()
+        const holding = req.body
+        const portfolioId = req.params.portfolioId
+        const holdingId = req.params.holdingId
+
+        await updateHoldingById(portfolioId, holdingId, holding)
         res.sendStatus(204)
     } catch (error) {
         console.log("Error on controller layer")
