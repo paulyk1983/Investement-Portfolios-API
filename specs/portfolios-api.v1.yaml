@@ -307,10 +307,14 @@ components:
           type: integer
         notes:
           type: string
-        price:
+        buyPrice:
           type: number
+        settlementDate:
+          type: string
       required:
         - quantity
+        - buyPrice
+        - settlementDate
     Holding-Create:
       title: Holding-Create
       allOf:
@@ -329,8 +333,26 @@ components:
           properties:
             id:
               type: string
+            stopLossPrice:
+              type: number
+            stopLossStatus:
+              type: string
+              enum:
+                - warning
+                - danger
+                - breached
+                - active
+                - inactive
+            currentPrice:
+              type: number
+            totalValue:
+              type: number
           required:
             - id
+            - stopLossPrice
+            - stopLossStatus
+            - currentPrice
+            - totalValue
         - $ref: '#/components/schemas/Holding-Create'
     Owner:
       title: Owner
