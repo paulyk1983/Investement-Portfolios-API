@@ -36,25 +36,18 @@ const findHoldingById = async (portfolioId, holdingId) => {
 
 const updateHoldingById = async (portfolioId, holdingId, holding) => {
     try {
-        // GET TARGET HOLDING INDEX FOR QUERY
-        var holdingIndex = 0
-        var holdingTicker = ""
         const portfolioHoldings = await PortfolioDetails.findById(portfolioId).select('holdings')
-        for (i = 0; i < portfolioHoldings.holdings.length; i++) {
-            if (portfolioHoldings.holdings[i]._id == holdingId) {
-                holdingIndex = i
-                holdingTicker = portfolioHoldings.holdings[i].ticker
-                break
-            }
-        }
-        
-        // BUILD VALUE FOR $set
-        holding._id = holdingId
-        holding.ticker = holdingTicker
-        const holdingStr = JSON.stringify(holding)
-        const setQueryKeyString = '{"holdings.'+holdingIndex+'":'+holdingStr+'}'
-        const setQuery = JSON.parse(setQueryKeyString)
-        
+
+        // GET HOLDING'S TICKER
+        const targetHoldingTicker = portfolioHoldings.holdings.filter(holding => holding._id == holdingId)[0].ticker
+        holding.ticker = targetHoldingTicker
+
+        // UPDATE HOLDINGS ARRAY
+        var portfolioHoldingsArray = portfolioHoldings.holdings.filter(holding => holding._id != holdingId)
+        portfolioHoldingsArray.push(holding)
+
+        setQuery = { holdings: portfolioHoldingsArray }
+
         // UPDATE PORTFOLIO WITH UPDATED HOLDING
         await PortfolioWrite.updateOne( 
             { _id: portfolioId }, 
