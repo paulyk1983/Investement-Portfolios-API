@@ -68,9 +68,19 @@ const updateHoldingById = async (portfolioId, holdingId, holding) => {
     }  
 }
 
-const deleteHoldingById = async () => {
+const deleteHoldingById = async (portfolioId, holdingId) => {
     try {
-        console.log('delete holding')
+        const portfolioHoldings = await PortfolioDetails.findById(portfolioId).select('holdings')
+        const portfolioHoldingsArray = portfolioHoldings.holdings.filter(holding => holding._id != holdingId);
+
+        setQuery = { holdings: portfolioHoldingsArray }
+
+        // UPDATE PORTFOLIO WITH UPDATED HOLDING
+        await PortfolioWrite.updateOne( 
+            { _id: portfolioId }, 
+            { $set: setQuery }
+        )
+
         return {}
     } catch (error) {
         console.log("Error on service layer")
