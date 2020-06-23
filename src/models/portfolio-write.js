@@ -5,11 +5,13 @@ const { holdingCreateSchema } = require('./holding-create')
 var portfolioWriteSchema = new Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 100
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 500
     },
     owner: {
         type: Object,
@@ -17,7 +19,8 @@ var portfolioWriteSchema = new Schema({
         properties: {
             name:{
                 type: String,
-                required: true
+                required: true,
+                maxlength: 100
             }
         }
     },

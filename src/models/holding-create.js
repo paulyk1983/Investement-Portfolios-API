@@ -3,10 +3,13 @@ const Schema = mongoose.Schema
 
 var holdingCreateSchema = new Schema({
     ticker: {
-        type: String
+        type: String,
+        required: true,
+        maxlength: 5
     },
     quantity: {
-        type: Number
+        type: Number,
+        required: true
     },
     stopLossType: {
         type: String,
@@ -19,10 +22,12 @@ var holdingCreateSchema = new Schema({
         type: String
     },
     buyPrice: {
-        type: Number
+        type: Number,
+        required: true
     },
     settlementDate: {
-        type: Date
+        type: Date,
+        required: true
     }
 })
 
