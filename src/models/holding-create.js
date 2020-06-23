@@ -18,8 +18,11 @@ var holdingCreateSchema = new Schema({
     notes: {
         type: String
     },
-    price: {
+    buyPrice: {
         type: Number
+    },
+    settlementDate: {
+        type: Date
     }
 })
 

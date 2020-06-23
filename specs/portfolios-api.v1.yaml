@@ -311,6 +311,7 @@ components:
           type: number
         settlementDate:
           type: string
+          format: date
       required:
         - quantity
         - buyPrice

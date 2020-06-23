@@ -2,12 +2,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 var holdingUpdateSchema = new Schema({
-    name: {
-        type: String
-    },
-    description: {
-        type: String
-    },
     quantity: {
         type: Number
     },
@@ -18,13 +12,26 @@ var holdingUpdateSchema = new Schema({
     stopLossPercent: {
         type: Number
     },
-    stopLossPrice: {
-        type: Number
-    },
     notes: {
         type: String
     },
-    price: {
+    buyPrice: {
+        type: Number
+    },
+    settlementDate: {
+        type: Date
+    },
+    stopLossPrice: {
+        type: Number
+    },
+    stopLossStatus: {
+        type: String,
+        enum: ['active','inactive','warning','danger','breached']
+    },
+    currentPrice: {
+        type: Number,
+    },
+    totalValue: {
         type: Number
     }
 })
