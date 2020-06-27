@@ -1,6 +1,8 @@
 const { PortfolioList } = require('../models/portfolio-list')
 const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
+const { ErrorResponse } = require('../models/error-response')
+
 
 
 const findAllPortfolios = async () => {
@@ -29,14 +31,18 @@ const createPortfolio = async (req) => {
 const findPortfolioById = async (portfolioId) => {
     try {
         const portfolio = await PortfolioDetails.findById(portfolioId)
-        
-        return portfolio    
+        if (!portfolio) {
+            return noPortfolioErrorResponse()
+        } else {
+            return portfolio 
+        }
+           
     } catch (error) {
         
-        console.log("Error on service layer")
+        console.log("Error on service layer ddddd")
         console.log(error)
         if (error.kind == "ObjectId") {
-            return null
+            return noPortfolioErrorResponse()
         }
     }
 }
@@ -44,12 +50,17 @@ const findPortfolioById = async (portfolioId) => {
 const updatePortfolioById = async (portfolio, id) => {
     try {
         const query = {_id:{$eq:id}}
-        const updatedPortfolio = await PortfolioWrite.updateMany(query, portfolio)
-        
+        const updatedPortfolio = await PortfolioWrite.updateOne(query, portfolio)
+        if (updatedPortfolio.n == 0 && updatedPortfolio.nModified == 0) {
+            return noPortfolioErrorResponse()
+        }
         return updatedPortfolio
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
+        if (error.kind == "ObjectId") {
+            return noPortfolioErrorResponse()
+        }
     }
     
 }
@@ -60,7 +71,18 @@ const deletePortfolioById = async (portfolioId) => {
         return {}
     } catch (error) {
         console.log("Error on service layer")
+        if (error.kind == "ObjectId") {
+            return {}
+        }
     }
+}
+
+const noPortfolioErrorResponse = () => {
+    return new ErrorResponse({
+        status: 404,
+        title: "Not Found",
+        details: "Portfolio with specified id not found"
+    })
 }
 
 

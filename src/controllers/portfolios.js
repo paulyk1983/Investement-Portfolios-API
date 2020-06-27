@@ -31,14 +31,12 @@ const getPortfolio = async (req, res) => {
     try {
         const portfolioId = req.params.portfolioId
         
-        const portfolio = await findPortfolioById(portfolioId)
-
-        if (portfolio) {
-            const response = {data: portfolio}
-            res.status(200).json(response)
+        const result = await findPortfolioById(portfolioId)
+        
+        if (result.status && result.status == 404) {
+            res.status(404).json(result)
         } else {
-            const response = notFoundErrorMessage()
-            res.status(404).json(response)
+            res.status(200).json(result)
         }
     } catch (error) {
         console.log("Error on controller layer")
@@ -49,13 +47,12 @@ const getPortfolio = async (req, res) => {
 
 const updatePortfolio = async (req, res) => {
     try {
-        const portfolio = await updatePortfolioById(req.body, req.params.portfolioId)
-        
-        if (portfolio) {
-            res.sendStatus(204)
+        const result = await updatePortfolioById(req.body, req.params.portfolioId)
+
+        if (result.status && result.status == 404) {
+            res.status(404).json(result)            
         } else {
-            const response = notFoundErrorMessage()
-            res.status(404).json(response)
+            res.sendStatus(204)
         }
     } catch (error) {
         console.log("Error on controller layer")
@@ -68,7 +65,7 @@ const deletePortfolio = async (req, res) => {
     try {
         const portfolioId = req.params.portfolioId 
         await deletePortfolioById(portfolioId)
-
+        
         res.sendStatus(204)
        
     } catch (error) {
@@ -78,8 +75,8 @@ const deletePortfolio = async (req, res) => {
     }
 }
 
-const notFoundErrorMessage = () => {
+const portfolioNotFoundMessage = () => {
     return {"status":404, "title":"Not Found", "details":"Portfolio with the specified id cannot be found"}
 }
 
-module.exports = { getPortfolios, postPortfolios, getPortfolio, deletePortfolio, updatePortfolio }
+module.exports = { getPortfolios, postPortfolios, getPortfolio, deletePortfolio, updatePortfolio, portfolioNotFoundMessage }

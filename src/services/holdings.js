@@ -3,31 +3,58 @@ const { HoldingUpdate } = require('../models/holding-update')
 const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
 const portfolioService = require('./portfolios')
+const { ErrorResponse } = require('../models/error-response')
 
 
 const addHoldingToPortfolio = async (holding, portfolioId) => {
     try {
         const portfolio = await portfolioService.findPortfolioById(portfolioId)
-        portfolio.holdings.push(holding)
 
-        const query = {_id:{$eq:portfolioId}}
-        const updatedPortfolio = await PortfolioWrite.updateMany(query, portfolio)
+        if (portfolio.status && portfolio.status == 404) {
+            return portfolio
+        } else {
+            portfolio.holdings.push(holding)
 
-        return updatedPortfolio
+            const query = {_id:{$eq:portfolioId}}
+            const result = await PortfolioWrite.updateOne(query, portfolio)
+            return result
+        }
+
+        
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
+        if (error.kind == "ObjectId") {
+            return null
+        }
     }  
 }
 
 const findHoldingById = async (portfolioId, holdingId) => {
     try {
-        const portfolio = await PortfolioDetails.findById(portfolioId).select('holdings')
-        const targetHolding = portfolio.holdings.filter(holding => {
-            return holding._id == holdingId
-        })
-       
-        return targetHolding[0]
+        const portfolioResult = await portfolioService.findPortfolioById(portfolioId)
+        if (portfolioResult.status && portfolioResult.status == 404) {
+            
+            return portfolioResult
+        } else {
+            var targetHolding = portfolioResult.holdings.filter(holding => {
+                return holding._id == holdingId
+            })
+            
+            if (!targetHolding || targetHolding.length == 0) {
+                var noHoldingErrorResponse = new ErrorResponse({
+                    status: 404,
+                    title: "Not Found",
+                    details: "Holding with specified id not found"
+                })
+                return noHoldingErrorResponse
+
+            } else {
+                return targetHolding
+            }
+            
+        }
+        
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
@@ -36,25 +63,42 @@ const findHoldingById = async (portfolioId, holdingId) => {
 
 const updateHoldingById = async (portfolioId, holdingId, holding) => {
     try {
-        const portfolioHoldings = await PortfolioDetails.findById(portfolioId).select('holdings')
+        const portfolioResult = await portfolioService.findPortfolioById(portfolioId)
+        if (portfolioResult.status && portfolioResult.status == 404) {
+            // returns portfolio not found message
+            return portfolioResult
+        } else {
+            // GET HOLDING'S TICKER
+            const targetHoldingTicker = portfolioResult.holdings.filter(holding => holding._id == holdingId).ticker
+            console.log(portfolioResult.holdings)
+            if (!targetHoldingTicker) {
+                var noHoldingErrorResponse = new ErrorResponse({
+                    status: 404,
+                    title: "Not Found",
+                    details: "Holding with specified id not found"
+                })
+                return noHoldingErrorResponse
+            } else {
+                holding.ticker = targetHoldingTicker
 
-        // GET HOLDING'S TICKER
-        const targetHoldingTicker = portfolioHoldings.holdings.filter(holding => holding._id == holdingId)[0].ticker
-        holding.ticker = targetHoldingTicker
+                // UPDATE HOLDINGS ARRAY
+                var portfolioHoldingsArray = portfolioResult.holdings.filter(holding => holding._id != holdingId)
+                portfolioHoldingsArray.push(holding)
 
-        // UPDATE HOLDINGS ARRAY
-        var portfolioHoldingsArray = portfolioHoldings.holdings.filter(holding => holding._id != holdingId)
-        portfolioHoldingsArray.push(holding)
+                setQuery = { holdings: portfolioHoldingsArray }
 
-        setQuery = { holdings: portfolioHoldingsArray }
+                // UPDATE PORTFOLIO WITH UPDATED HOLDING
+                await PortfolioWrite.updateOne( 
+                    { _id: portfolioId }, 
+                    { $set: setQuery }
+                )
+        
+                return {}
+            }
+            
+        }
 
-        // UPDATE PORTFOLIO WITH UPDATED HOLDING
-        await PortfolioWrite.updateOne( 
-            { _id: portfolioId }, 
-            { $set: setQuery }
-        )
-   
-        return {}
+        
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
