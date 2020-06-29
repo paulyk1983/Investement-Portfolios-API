@@ -69,9 +69,9 @@ const updateHoldingById = async (portfolioId, holdingId, holding) => {
             return portfolioResult
         } else {
             // GET HOLDING'S TICKER
-            const targetHoldingTicker = portfolioResult.holdings.filter(holding => holding._id == holdingId).ticker
-            console.log(portfolioResult.holdings)
-            if (!targetHoldingTicker) {
+            const targetHolding = portfolioResult.holdings.filter(holding => holding._id == holdingId)[0]
+            console.log(targetHolding)
+            if (!targetHolding) {
                 var noHoldingErrorResponse = new ErrorResponse({
                     status: 404,
                     title: "Not Found",
@@ -79,20 +79,10 @@ const updateHoldingById = async (portfolioId, holdingId, holding) => {
                 })
                 return noHoldingErrorResponse
             } else {
-                holding.ticker = targetHoldingTicker
+                holding.ticker = targetHolding.ticker
+                const query = {_id:{$eq:holdingId}}
+                const updateHolding = await HoldingUpdate.updateOne({ query, holding})
 
-                // UPDATE HOLDINGS ARRAY
-                var portfolioHoldingsArray = portfolioResult.holdings.filter(holding => holding._id != holdingId)
-                portfolioHoldingsArray.push(holding)
-
-                setQuery = { holdings: portfolioHoldingsArray }
-
-                // UPDATE PORTFOLIO WITH UPDATED HOLDING
-                await PortfolioWrite.updateOne( 
-                    { _id: portfolioId }, 
-                    { $set: setQuery }
-                )
-        
                 return {}
             }
             
