@@ -3,7 +3,8 @@ const Schema = mongoose.Schema
 
 var holdingUpdateSchema = new Schema({
     quantity: {
-        type: Number
+        type: Number,
+        required: true
     },
     stopLossType: {
         type: String,
@@ -12,27 +13,19 @@ var holdingUpdateSchema = new Schema({
     stopLossPercent: {
         type: Number
     },
+    stopLossStartDate: {
+        type: Date
+    },
     notes: {
         type: String
     },
     buyPrice: {
-        type: Number
+        type: Number,
+        required: true
     },
     settlementDate: {
-        type: Date
-    },
-    stopLossPrice: {
-        type: Number
-    },
-    stopLossStatus: {
-        type: String,
-        enum: ['active','inactive','warning','danger','breached']
-    },
-    currentPrice: {
-        type: Number,
-    },
-    totalValue: {
-        type: Number
+        type: Date,
+        required: true
     }
 })
 

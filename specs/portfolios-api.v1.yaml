@@ -312,6 +312,11 @@ components:
         settlementDate:
           type: string
           format: date
+          description: Date in which order was complete and posted to account. Will be used as the stoploss start date if stopLossStartDate is not provided.
+        stopLossStartDate:
+          type: string
+          format: date
+          description: Can be null or blank. Will override settlementDate when calculating stopLossPrice
       required:
         - quantity
         - buyPrice
@@ -350,7 +355,6 @@ components:
               type: number
           required:
             - id
-            - stopLossPrice
             - stopLossStatus
             - currentPrice
             - totalValue

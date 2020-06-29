@@ -18,6 +18,9 @@ var holdingCreateSchema = new Schema({
     stopLossPercent: {
         type: Number
     },
+    stopLossStartDate: {
+        type: Date
+    },
     notes: {
         type: String
     },

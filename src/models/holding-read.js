@@ -22,6 +22,9 @@ var holdingReadSchema = new Schema({
     stopLossPrice: {
         type: Number
     },
+    stopLossStartDate: {
+        type: Date
+    },
     notes: {
         type: String
     },
