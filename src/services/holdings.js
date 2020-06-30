@@ -18,9 +18,7 @@ const addHoldingToPortfolio = async (holding, portfolioId) => {
             const query = {_id:{$eq:portfolioId}}
             const result = await PortfolioWrite.updateOne(query, portfolio)
             return result
-        }
-
-        
+        } 
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
@@ -41,20 +39,12 @@ const findHoldingById = async (portfolioId, holdingId) => {
                 return holding._id == holdingId
             })
             
-            if (!targetHolding || targetHolding.length == 0) {
-                var noHoldingErrorResponse = new ErrorResponse({
-                    status: 404,
-                    title: "Not Found",
-                    details: "Holding with specified id not found"
-                })
-                return noHoldingErrorResponse
-
+            if (!targetHolding || targetHolding.length == 0) { 
+                return noHoldingErrorResponse()
             } else {
                 return targetHolding
-            }
-            
-        }
-        
+            } 
+        }    
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
@@ -72,23 +62,15 @@ const updateHoldingById = async (portfolioId, holdingId, holding) => {
             const targetHolding = portfolioResult.holdings.filter(holding => holding._id == holdingId)[0]
             console.log(targetHolding)
             if (!targetHolding) {
-                var noHoldingErrorResponse = new ErrorResponse({
-                    status: 404,
-                    title: "Not Found",
-                    details: "Holding with specified id not found"
-                })
-                return noHoldingErrorResponse
+                return noHoldingErrorResponse()
             } else {
                 holding.ticker = targetHolding.ticker
                 const query = {_id:{$eq:holdingId}}
                 const updateHolding = await HoldingUpdate.updateOne({ query, holding})
 
                 return {}
-            }
-            
-        }
-
-        
+            }    
+        }  
     } catch (error) {
         console.log("Error on service layer")
         console.log(error)
@@ -113,6 +95,14 @@ const deleteHoldingById = async (portfolioId, holdingId) => {
         console.log("Error on service layer")
         console.log(error)
     }  
+}
+
+const noHoldingErrorResponse = async () => {
+    return new ErrorResponse({
+        status: 404,
+        title: "Not Found",
+        details: "Holding with specified id not found"
+    })
 }
 
 

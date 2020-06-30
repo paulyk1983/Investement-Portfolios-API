@@ -353,12 +353,16 @@ components:
               type: number
             totalValue:
               type: number
+            name:
+              type: string
           required:
             - id
             - stopLossStatus
             - currentPrice
             - totalValue
+            - name
         - $ref: '#/components/schemas/Holding-Create'
+      description: ''
     Owner:
       title: Owner
       type: object

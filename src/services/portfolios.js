@@ -2,7 +2,7 @@ const { PortfolioList } = require('../models/portfolio-list')
 const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
 const { ErrorResponse } = require('../models/error-response')
-
+const { getHistoricalData, getQuote } = require('../services/securities')
 
 
 const findAllPortfolios = async () => {
