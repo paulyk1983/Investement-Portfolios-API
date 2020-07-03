@@ -2,7 +2,6 @@ const { PortfolioList } = require('../models/portfolio-list')
 const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
 const { ErrorResponse } = require('../models/error-response')
-const { getHistoricalData, getQuote } = require('../services/securities')
 
 
 const findAllPortfolios = async () => {
@@ -39,7 +38,7 @@ const findPortfolioById = async (portfolioId) => {
            
     } catch (error) {
         
-        console.log("Error on service layer ddddd")
+        console.log("Error on service layer")
         console.log(error)
         if (error.kind == "ObjectId") {
             return noPortfolioErrorResponse()

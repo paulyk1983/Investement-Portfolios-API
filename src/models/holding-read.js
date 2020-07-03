@@ -36,6 +36,9 @@ var holdingReadSchema = new Schema({
     },
     settlementDate: {
         type: Date
+    },
+    currentPrice: {
+        type: Number
     }
 })
 

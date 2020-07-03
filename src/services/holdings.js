@@ -1,9 +1,8 @@
-const { HoldingRead } = require('../models/holding-read')
-const { HoldingUpdate } = require('../models/holding-update')
 const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
 const portfolioService = require('./portfolios')
 const { ErrorResponse } = require('../models/error-response')
+const { getHistoricalData, getCurrentPrice } = require('../services/securities')
 
 
 const addHoldingToPortfolio = async (holding, portfolioId) => {
@@ -35,13 +34,18 @@ const findHoldingById = async (portfolioId, holdingId) => {
             
             return portfolioResult
         } else {
-            var targetHolding = portfolioResult.holdings.filter(holding => {
+            var targetHoldingArray = portfolioResult.holdings.filter(holding => {
                 return holding._id == holdingId
             })
             
-            if (!targetHolding || targetHolding.length == 0) { 
+            if (!targetHoldingArray || targetHoldingArray.length == 0) { 
                 return noHoldingErrorResponse()
             } else {
+                var targetHolding = targetHoldingArray[0]
+
+                const currentPrice = await getCurrentPrice(targetHolding.ticker)
+                targetHolding.currentPrice = currentPrice
+
                 return targetHolding
             } 
         }    
