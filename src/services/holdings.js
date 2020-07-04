@@ -47,7 +47,51 @@ const findHoldingById = async (portfolioId, holdingId) => {
                 const currentPrice = await getCurrentPrice(targetHolding.ticker)
                 targetHolding.currentPrice = currentPrice
 
-                return targetHolding
+                if (targetHolding.stopLossPercent) {
+                    
+                    var newLastHighPrice = false
+                    var newStopLossStatus = false
+
+                    // Get lastHighPrice                    
+                    if (currentPrice > targetHolding.lastHighPrice) {
+                        targetHolding.lastHighPrice == currentPrice
+                        newLastHighPrice = true
+                    }
+
+                    // Calculate stopLossPrice
+                    const lastHighPrice = targetHolding.lastHighPrice
+                    const stopLossPrice = (lastHighPrice - (lastHighPrice * (targetHoldoing.stopLossPercent/100)))
+                    targetHolding.stopLossPrice = stopLossPrice
+
+                    // Calculate stopLossStatus
+                    const dangerPercent = 10
+                    const dangerPrice = (stopLossPrice * (dangerPercent/100)) + stopLossPrice
+                    const warningPercent = 25
+                    const warningPrice = (stopLossPrice * (warningPercent/100)) + stopLossPrice
+                    if (currentPrice <= stopLossPrice) {
+                        const stopLossStatus = "breached"
+                    } else if (currentPrice <= dangerPrice) {
+                        const stopLossStatus = "danger"
+                    } else if (currentPrice <= warningPrice) {
+                        const stopLossStatus = "warning"
+                    } else {
+                        const stopLossStatus = "active"
+                    }
+
+                    if (stopLossStatus != targetHolding.stopLossStatus) {
+                        newStopLossStatus = true
+                    }
+
+                    if (newLastHighPrice || newStopLossStatus) {
+                        // update holding db...
+                    }
+
+                    return targetHolding
+                } else {
+                    return targetHolding
+                }
+
+                
             } 
         }    
     } catch (error) {

@@ -23,6 +23,9 @@ var holdingUpdateSchema = new Schema({
         type: Number,
         required: true
     },
+    lastHighPrice: {
+        type: Number
+    },
     settlementDate: {
         type: Date,
         required: true
