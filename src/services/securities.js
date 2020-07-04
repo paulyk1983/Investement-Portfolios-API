@@ -26,5 +26,19 @@ const getCurrentPrice = async (symbol) => {
     }
 }
 
+const getQuotes = async (symbols) => {
+    try {
+        const quotes = await yahooFinance.quote({
+            symbols: symbols,
+            modules: [ 'summaryDetail' ] // see the docs for the full list
+        }) 
 
-module.exports = { getHistoricalData, getCurrentPrice }
+        return quotes
+    } catch (error) {
+        console.log("error on service layer")
+        console.log(error)
+    }
+}
+
+
+module.exports = { getHistoricalData, getCurrentPrice, getQuotes }

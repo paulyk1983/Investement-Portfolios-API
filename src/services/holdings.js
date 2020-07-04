@@ -43,6 +43,7 @@ const findHoldingById = async (portfolioId, holdingId) => {
             } else {
                 var targetHolding = targetHoldingArray[0]
 
+                // NOTE: ADDS 'BID' PRICE WHICH MAY NOT BE EXACTLY WHAT IS SEEN IN THE MARKET (OFF BY A FEW POINTS)
                 const currentPrice = await getCurrentPrice(targetHolding.ticker)
                 targetHolding.currentPrice = currentPrice
 

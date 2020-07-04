@@ -2,6 +2,7 @@ const { PortfolioList } = require('../models/portfolio-list')
 const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
 const { ErrorResponse } = require('../models/error-response')
+const { getQuotes } = require('../services/securities')
 
 
 const findAllPortfolios = async () => {
@@ -33,6 +34,16 @@ const findPortfolioById = async (portfolioId) => {
         if (!portfolio) {
             return noPortfolioErrorResponse()
         } else {
+            var holdings = portfolio.holdings
+            const holdingTickerSymbols = holdings.map(obj => obj.ticker)
+            const quotes = await getQuotes(holdingTickerSymbols)
+
+            for (i = 0; i < holdings.length; i++) {
+                // NOTE: ADDS 'BID' PRICE WHICH MAY NOT BE EXACTLY WHAT IS SEEN IN THE MARKET (OFF BY A FEW POINTS)
+                holdings[i].currentPrice = quotes[holdings[i].ticker].summaryDetail.bid
+              }
+            // TODO use current prices to calculate stoploss price, use stoploss price to calculate stoploss status!!!
+            
             return portfolio 
         }
            
