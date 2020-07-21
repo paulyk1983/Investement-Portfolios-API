@@ -2,7 +2,8 @@ const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
 const portfolioService = require('./portfolios')
 const { ErrorResponse } = require('../models/error-response')
-const { getHistoricalData, getCurrentPrice } = require('../services/securities')
+const { getLastHighPrice, getCurrentPrice } = require('../services/securities')
+const { formatDate } = require('../helpers/dates')
 
 
 const addHoldingToPortfolio = async (holding, portfolioId) => {
@@ -12,6 +13,15 @@ const addHoldingToPortfolio = async (holding, portfolioId) => {
         if (portfolio.status && portfolio.status == 404) {
             return portfolio
         } else {
+            var startDate = "YYYY-MM-DD"
+            if (holding.stopLossStartDate) {
+                startDate = holding.stopLossStartDate
+            } else {
+                startDate = holding.settlementDate
+            }
+            const lastHighPrice = await getLastHighPrice(holding.ticker, startDate)
+            holding.lastHighPrice = lastHighPrice
+
             portfolio.holdings.push(holding)
 
             const query = {_id:{$eq:portfolioId}}
@@ -29,7 +39,9 @@ const addHoldingToPortfolio = async (holding, portfolioId) => {
 
 const findHoldingById = async (portfolioId, holdingId) => {
     try {
+
         const portfolioResult = await portfolioService.findPortfolioById(portfolioId)
+
         if (portfolioResult.status && portfolioResult.status == 404) {
             
             return portfolioResult
@@ -50,7 +62,6 @@ const findHoldingById = async (portfolioId, holdingId) => {
                 if (targetHolding.stopLossPercent) {
                     
                     var newLastHighPrice = false
-                    var newStopLossStatus = false
 
                     // Get lastHighPrice                    
                     if (currentPrice > targetHolding.lastHighPrice) {
@@ -60,7 +71,7 @@ const findHoldingById = async (portfolioId, holdingId) => {
 
                     // Calculate stopLossPrice
                     const lastHighPrice = targetHolding.lastHighPrice
-                    const stopLossPrice = (lastHighPrice - (lastHighPrice * (targetHoldoing.stopLossPercent/100)))
+                    const stopLossPrice = (lastHighPrice - (lastHighPrice * (targetHolding.stopLossPercent/100)))
                     targetHolding.stopLossPrice = stopLossPrice
 
                     // Calculate stopLossStatus
@@ -68,30 +79,30 @@ const findHoldingById = async (portfolioId, holdingId) => {
                     const dangerPrice = (stopLossPrice * (dangerPercent/100)) + stopLossPrice
                     const warningPercent = 25
                     const warningPrice = (stopLossPrice * (warningPercent/100)) + stopLossPrice
+                    var stopLossStatus = ""
                     if (currentPrice <= stopLossPrice) {
-                        const stopLossStatus = "breached"
+                        stopLossStatus = "breached"
                     } else if (currentPrice <= dangerPrice) {
-                        const stopLossStatus = "danger"
+                        stopLossStatus = "danger"
                     } else if (currentPrice <= warningPrice) {
-                        const stopLossStatus = "warning"
+                        stopLossStatus = "warning"
                     } else {
-                        const stopLossStatus = "active"
+                        stopLossStatus = "active"
                     }
+                    targetHolding.stopLossStatus = stopLossStatus
 
-                    if (stopLossStatus != targetHolding.stopLossStatus) {
-                        newStopLossStatus = true
-                    }
-
-                    if (newLastHighPrice || newStopLossStatus) {
-                        // update holding db...
+                    if (newLastHighPrice) {
+                        // update db
+                        const query = {_id:{$eq:portfolioId}}
+                        const update = {$set: {"lastHighPrice":currentPrice}}
+                        await PortfolioWrite.updateOne(query, update)
+                        console.log("lastHighPrice updated!")
                     }
 
                     return targetHolding
                 } else {
                     return targetHolding
                 }
-
-                
             } 
         }    
     } catch (error) {
@@ -104,15 +115,32 @@ const updateHoldingById = async (portfolioId, holdingId, holding) => {
     try {
         const portfolio = await portfolioService.findPortfolioById(portfolioId)
         if (portfolio.status && portfolio.status == 404) {
+
             // returns portfolio not found message
             return portfolio
         } else {
+
             // GET HOLDING'S TICKER
             const targetHolding = portfolio.holdings.filter(holding => holding._id == holdingId)[0]
             if (!targetHolding) {
+
                 return noHoldingErrorResponse()
             } else {
-                console.log(targetHolding)
+
+                // check to see if settlement date or stoploss start date changed. If so, update with new lastHighPrice
+                if (holding.stopLossStartDate && targetHolding.stopLossStartDate && holding.stopLossStartDate != formatDate(targetHolding.stopLossStartDate)) {
+                    const lastHighPrice = await getLastHighPrice(targetHolding.ticker, holding.stopLossStartDate)
+                    targetHolding.lastHighPrice = lastHighPrice 
+                    console.log("lastHighPrice updated!")       
+
+                } else if (holding.settlementDate != formatDate(targetHolding.settlementDate)) {
+                    const lastHighPrice = await getLastHighPrice(targetHolding.ticker, holding.settlementDate)  
+                    targetHolding.lastHighPrice = lastHighPrice   
+                    console.log("lastHighPrice updated!")     
+
+                }
+
+                // UPDATE HOLDING OBJECT (ALL FIELDS CONTAINED IN REQUEST)
                 for (const property in holding) {
                     for (const targetProperty in targetHolding) {
                         if (targetProperty == property) {
@@ -121,7 +149,7 @@ const updateHoldingById = async (portfolioId, holdingId, holding) => {
                     }
                 }
 
-                // UPDATE PORTFOLIO WITH UPDATED HOLDING
+                // UPDATE PORTFOLIO DOCUMENT WITH UPDATED HOLDING OBJECT
                 const query = {_id:{$eq:portfolioId}}
                 await PortfolioWrite.updateOne(query, portfolio)
 

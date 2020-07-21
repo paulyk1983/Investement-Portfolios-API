@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const { formatDate } = require('../helpers/dates')
 
 var holdingReadSchema = new Schema({
     id: {
@@ -28,6 +29,10 @@ var holdingReadSchema = new Schema({
     stopLossStartDate: {
         type: Date
     },
+    stopLossStatus: {
+        type: String,
+        enum: ["active, inactive, warning, danger, breached"] 
+    },
     notes: {
         type: String
     },
@@ -48,6 +53,8 @@ var holdingReadSchema = new Schema({
 holdingReadSchema.set('toJSON', {
     transform: function(doc, ret) {
        ret.id = ret._id
+       ret.settlementDate = formatDate(ret.settlementDate)
+       ret.stopLossStartDate = formatDate(ret.stopLossStartDate)
        delete ret._id
        delete ret.__v
        return ret

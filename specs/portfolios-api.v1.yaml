@@ -312,11 +312,13 @@ components:
         settlementDate:
           type: string
           format: date
-          description: Date in which order was complete and posted to account. Will be used as the stoploss start date if stopLossStartDate is not provided.
+          description: Date (YYYY-MM-DD) in which order was complete and posted to account. Will be used as the stoploss start date if stopLossStartDate is not provided.
+          pattern: "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))"
         stopLossStartDate:
           type: string
           format: date
-          description: Can be null or blank. Will override settlementDate when calculating stopLossPrice
+          description: Date (YYYY-MM-DD) that is used to calculate stop loss. Can be null or blank. Will override settlementDate when calculating stopLossPrice
+          pattern: "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))"
       required:
         - quantity
         - buyPrice

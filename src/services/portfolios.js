@@ -35,16 +35,20 @@ const findPortfolioById = async (portfolioId) => {
             return noPortfolioErrorResponse()
         } else {
             var holdings = portfolio.holdings
-            const holdingTickerSymbols = holdings.map(obj => obj.ticker)
-            const quotes = await getQuotes(holdingTickerSymbols)
-
-            for (i = 0; i < holdings.length; i++) {
-                // NOTE: ADDS 'BID' PRICE WHICH MAY NOT BE EXACTLY WHAT IS SEEN IN THE MARKET (OFF BY A FEW POINTS)
-                holdings[i].currentPrice = quotes[holdings[i].ticker].summaryDetail.bid
-              }
-            // TODO use current prices to calculate stoploss price, use stoploss price to calculate stoploss status!!!
             
-            return portfolio 
+            if (holdings.length) {
+                const holdingTickerSymbols = holdings.map(obj => obj.ticker)
+                const quotes = await getQuotes(holdingTickerSymbols)
+                for (i = 0; i < holdings.length; i++) {
+                    // NOTE: ADDS 'BID' PRICE WHICH MAY NOT BE EXACTLY WHAT IS SEEN IN THE MARKET (OFF BY A FEW POINTS)
+                    holdings[i].currentPrice = quotes[holdings[i].ticker].summaryDetail.bid
+                }
+                // TODO use current prices to calculate stoploss price, use stoploss price to calculate stoploss status!!!
+
+                return portfolio 
+            } else {
+                return portfolio 
+            } 
         }
            
     } catch (error) {

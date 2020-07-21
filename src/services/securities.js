@@ -1,15 +1,27 @@
 var yahooFinance = require('yahoo-finance');
  
-const getHistoricalData = async () => {
-    yahooFinance.historical({
-        symbol: 'AAPL',
-        from: '2012-01-01',
-        to: '2012-12-31',
-        // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
-    }, function (err, quotes) {
-        console.log(quotes)
-        console.log(err)
-    });
+const getLastHighPrice = async (symbol, startDate) => {
+    try {
+        const historicalData = await yahooFinance.historical({
+            symbol: symbol,
+            from: startDate,
+            to: '2020-07-04',
+            // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
+        })
+
+        var peakPrice = 0
+        for (i = 0; i < historicalData.length; i++) {
+            if (historicalData[i].high > peakPrice) {
+                peakPrice = historicalData[i].high
+            }
+        }
+
+        return peakPrice
+    } catch (error) {
+        console.log("error on service layer")
+        console.log(error)
+    }
+      
 }
 
 const getCurrentPrice = async (symbol) => {
@@ -41,4 +53,4 @@ const getQuotes = async (symbols) => {
 }
 
 
-module.exports = { getHistoricalData, getCurrentPrice, getQuotes }
+module.exports = { getLastHighPrice, getCurrentPrice, getQuotes }
