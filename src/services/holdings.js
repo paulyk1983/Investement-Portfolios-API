@@ -60,38 +60,14 @@ const findHoldingById = async (portfolioId, holdingId) => {
                 targetHolding.currentPrice = currentPrice
 
                 if (targetHolding.stopLossPercent) {
+
+                    const stopLossData = calculateHoldingStopLoss(currentPrice, targetHolding.lastHighPrice, targetHolding.stopLossPercent)
                     
-                    var newLastHighPrice = false
+                    targetHolding.stopLossPrice = stopLossData.stopLossPrice
 
-                    // Get lastHighPrice                    
-                    if (currentPrice > targetHolding.lastHighPrice) {
-                        targetHolding.lastHighPrice == currentPrice
-                        newLastHighPrice = true
-                    }
+                    targetHolding.stopLossStatus = stopLossData.stopLossStatus
 
-                    // Calculate stopLossPrice
-                    const lastHighPrice = targetHolding.lastHighPrice
-                    const stopLossPrice = (lastHighPrice - (lastHighPrice * (targetHolding.stopLossPercent/100)))
-                    targetHolding.stopLossPrice = stopLossPrice
-
-                    // Calculate stopLossStatus
-                    const dangerPercent = 10
-                    const dangerPrice = (stopLossPrice * (dangerPercent/100)) + stopLossPrice
-                    const warningPercent = 25
-                    const warningPrice = (stopLossPrice * (warningPercent/100)) + stopLossPrice
-                    var stopLossStatus = ""
-                    if (currentPrice <= stopLossPrice) {
-                        stopLossStatus = "breached"
-                    } else if (currentPrice <= dangerPrice) {
-                        stopLossStatus = "danger"
-                    } else if (currentPrice <= warningPrice) {
-                        stopLossStatus = "warning"
-                    } else {
-                        stopLossStatus = "active"
-                    }
-                    targetHolding.stopLossStatus = stopLossStatus
-
-                    if (newLastHighPrice) {
+                    if (stopLossData.newLastHighPrice) {
                         // update db
                         const query = {_id:{$eq:portfolioId}}
                         const update = {$set: {"lastHighPrice":currentPrice}}
@@ -180,6 +156,40 @@ const deleteHoldingById = async (portfolioId, holdingId) => {
         console.log("Error on service layer")
         console.log(error)
     }  
+}
+
+const calculateHoldingStopLoss = (currentPrice, lastHighPrice, stopLossPercent) => {
+    // Should return newLastHighPrice(bool), stopLossPrice and stopLossStatus
+    var result = {}
+    
+    // Get lastHighPrice                    
+    if (currentPrice > lastHighPrice) {
+        lastHighPrice == currentPrice
+        result.newLastHighPrice = true
+    }
+
+    // Calculate stopLossPrice
+    const stopLossPrice = (lastHighPrice - (lastHighPrice * (stopLossPercent/100)))
+    result.stopLossPrice = stopLossPrice
+
+    // Calculate stopLossStatus
+    const dangerPercent = 10
+    const dangerPrice = (stopLossPrice * (dangerPercent/100)) + stopLossPrice
+    const warningPercent = 25
+    const warningPrice = (stopLossPrice * (warningPercent/100)) + stopLossPrice
+    var stopLossStatus = ""
+    if (currentPrice <= stopLossPrice) {
+        stopLossStatus = "breached"
+    } else if (currentPrice <= dangerPrice) {
+        stopLossStatus = "danger"
+    } else if (currentPrice <= warningPrice) {
+        stopLossStatus = "warning"
+    } else {
+        stopLossStatus = "active"
+    }
+    result.stopLossStatus = stopLossStatus
+
+    return result
 }
 
 const noHoldingErrorResponse = async () => {
