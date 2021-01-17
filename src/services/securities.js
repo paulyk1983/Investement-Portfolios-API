@@ -38,19 +38,60 @@ const getCurrentPrice = async (symbol) => {
     }
 }
 
-const getQuotes = async (symbols) => {
+// takes in array of tickers and returns array of quotes which include ticker and currentPrice properties
+const getQuotes = async (tickerSymbols) => {
     try {
-        const quotes = await yahooFinance.quote({
-            symbols: symbols,
+        const quotesFromYahoo = await yahooFinance.quote({
+            symbols: tickerSymbols,
             modules: [ 'summaryDetail' ] // see the docs for the full list
-        }) 
+        })
+        if (!quotesFromYahoo) {
+            throw "Unable to connect to Yahoo Fincance"
+        } else {
+            var quotes = []     
+            for (i = 0; i < tickerSymbols.length; i++) {
+                // NOTE: ADDS 'BID' PRICE WHICH MAY NOT BE EXACTLY WHAT IS SEEN IN THE MARKET (OFF BY A FEW POINTS)
+                let quote = {
+                    "ticker": tickerSymbols[i],
+                    "currentPrice": quotesFromYahoo[tickerSymbols[i]].summaryDetail.bid
+                }
+                    
+                quotes.push(quote)
+            }
+            
+            return quotes
+        }
 
-        return quotes
     } catch (error) {
         console.log("error on service layer")
         console.log(error)
     }
 }
 
+const calculateStopLossPrice = (lastHighPrice, stopLossPercent) => { 
+    return (lastHighPrice - (lastHighPrice * (stopLossPercent/100)))
+}
 
-module.exports = { getLastHighPrice, getCurrentPrice, getQuotes }
+const calculateStopLossStatus = (currentPrice, stopLossPrice) => {
+    const dangerPercent = 10
+    const warningPercent = 25
+    const dangerPrice = (stopLossPrice * (dangerPercent/100)) + stopLossPrice
+    const warningPrice = (stopLossPrice * (warningPercent/100)) + stopLossPrice
+
+    var stopLossStatus = ""
+    if (currentPrice <= stopLossPrice) {
+        stopLossStatus = "breached"
+    } else if (currentPrice <= dangerPrice) {
+        stopLossStatus = "danger"
+    } else if (currentPrice <= warningPrice) {
+        stopLossStatus = "warning"
+    } else {
+        stopLossStatus = "active"
+    }
+
+    return stopLossStatus
+}
+
+
+
+module.exports = { getLastHighPrice, getCurrentPrice, getQuotes, calculateStopLossPrice, calculateStopLossStatus }

@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const { formatDate } = require('../helpers/dates')
+const { formatDate } = require('../utilities/dates')
+const { getCurrentPrice } = require('../services/securities')
+
 
 var holdingReadSchema = new Schema({
     id: {
@@ -31,7 +33,7 @@ var holdingReadSchema = new Schema({
     },
     stopLossStatus: {
         type: String,
-        enum: ["active, inactive, warning, danger, breached"] 
+        enum: ["active", "inactive", "warning", "danger", "breached"] 
     },
     notes: {
         type: String
@@ -46,21 +48,14 @@ var holdingReadSchema = new Schema({
         type: Date
     },
     currentPrice: {
-        type: Number
+        type: Number,
+        default: null
     }
 })
 
-holdingReadSchema.set('toJSON', {
-    transform: function(doc, ret) {
-       ret.id = ret._id
-       ret.settlementDate = formatDate(ret.settlementDate)
-       ret.stopLossStartDate = formatDate(ret.stopLossStartDate)
-       delete ret._id
-       delete ret.__v
-       return ret
-    }
- })
-
+// default: function() {
+//     return getCurrentPrice(this.ticker)
+// }
 
 const HoldingRead = mongoose.model('HoldingRead', holdingReadSchema, 'holdings')
 

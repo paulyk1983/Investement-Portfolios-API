@@ -2,7 +2,6 @@ const { PortfolioList } = require('../models/portfolio-list')
 const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
 const { ErrorResponse } = require('../models/error-response')
-const { getQuotes } = require('../services/securities')
 
 
 const findAllPortfolios = async () => {
@@ -14,7 +13,6 @@ const findAllPortfolios = async () => {
         console.log("Error on service layer")
         console.log(error)
     }
-    
 }
 
 const createPortfolio = async (req) => {
@@ -30,25 +28,18 @@ const createPortfolio = async (req) => {
 
 const findPortfolioById = async (portfolioId) => {
     try {
-        const portfolio = await PortfolioDetails.findById(portfolioId)
-        if (!portfolio) {
+        var originalPortfolio = await PortfolioDetails.findById(portfolioId)
+        
+        if (!originalPortfolio) {
             return noPortfolioErrorResponse()
         } else {
-            var holdings = portfolio.holdings
-            
-            if (holdings.length) {
-                const holdingTickerSymbols = holdings.map(obj => obj.ticker)
-                const quotes = await getQuotes(holdingTickerSymbols)
-                for (i = 0; i < holdings.length; i++) {
-                    // NOTE: ADDS 'BID' PRICE WHICH MAY NOT BE EXACTLY WHAT IS SEEN IN THE MARKET (OFF BY A FEW POINTS)
-                    holdings[i].currentPrice = quotes[holdings[i].ticker].summaryDetail.bid
-                }
-                // TODO use current prices to calculate stoploss price, use stoploss price to calculate stoploss status!!!
+            const upToDatePortfolio = originalPortfolio.transform()
 
-                return portfolio 
-            } else {
-                return portfolio 
-            } 
+            if (upToDatePortfolio.lastHighPrice != upToDatePortfolio.lastHighPrice || upToDatePortfolio.stopLossStatus != upToDatePortfolio.stopLossStatus) {
+                // Update portfolio database
+            }
+
+            return upToDatePortfolio
         }
            
     } catch (error) {

@@ -1,9 +1,11 @@
+const { HoldingRead } = require('../models/holding-read')
 const { PortfolioWrite } = require('../models/portfolio-write')
 const { PortfolioDetails } = require('../models/portfolio-detail')
-const portfolioService = require('./portfolios')
+const { findPortfolioById } = require('./portfolios')
 const { ErrorResponse } = require('../models/error-response')
 const { getLastHighPrice, getCurrentPrice } = require('../services/securities')
 const { formatDate } = require('../helpers/dates')
+const { calculateHoldingStopLoss } = require('../services/securities')
 
 
 const addHoldingToPortfolio = async (holding, portfolioId) => {
@@ -21,6 +23,11 @@ const addHoldingToPortfolio = async (holding, portfolioId) => {
             }
             const lastHighPrice = await getLastHighPrice(holding.ticker, startDate)
             holding.lastHighPrice = lastHighPrice
+
+            // get and store stopLossPrice. If there is not stopLossType, it is assumed user did not want to add a stoploss
+            if (holding.stopLossType && !holding.stopLossPrice) {
+                holding.stopLossPrice = calculateStopLossPrice(lastHighPrice, holding.stopLossPercent)
+            } 
 
             portfolio.holdings.push(holding)
 
@@ -40,7 +47,7 @@ const addHoldingToPortfolio = async (holding, portfolioId) => {
 const findHoldingById = async (portfolioId, holdingId) => {
     try {
 
-        const portfolioResult = await portfolioService.findPortfolioById(portfolioId)
+        const portfolioResult = await findPortfolioById(portfolioId)
 
         if (portfolioResult.status && portfolioResult.status == 404) {
             
@@ -66,9 +73,10 @@ const findHoldingById = async (portfolioId, holdingId) => {
                     targetHolding.stopLossPrice = stopLossData.stopLossPrice
 
                     targetHolding.stopLossStatus = stopLossData.stopLossStatus
-
+                    
                     if (stopLossData.newLastHighPrice) {
                         // update db
+                        // TODO, THIS DOES NOT TARGET A SPECIFIC HOLDING! THIS LOGIC SHOULD BE IN GET PORTFOLIO BY ID ANYWAYS. FOCUS ON THAT FIRST!!!
                         const query = {_id:{$eq:portfolioId}}
                         const update = {$set: {"lastHighPrice":currentPrice}}
                         await PortfolioWrite.updateOne(query, update)
@@ -86,6 +94,7 @@ const findHoldingById = async (portfolioId, holdingId) => {
         console.log(error)
     }  
 }
+
 
 const updateHoldingById = async (portfolioId, holdingId, holding) => {
     try {
@@ -156,40 +165,6 @@ const deleteHoldingById = async (portfolioId, holdingId) => {
         console.log("Error on service layer")
         console.log(error)
     }  
-}
-
-const calculateHoldingStopLoss = (currentPrice, lastHighPrice, stopLossPercent) => {
-    // Should return newLastHighPrice(bool), stopLossPrice and stopLossStatus
-    var result = {}
-    
-    // Get lastHighPrice                    
-    if (currentPrice > lastHighPrice) {
-        lastHighPrice == currentPrice
-        result.newLastHighPrice = true
-    }
-
-    // Calculate stopLossPrice
-    const stopLossPrice = (lastHighPrice - (lastHighPrice * (stopLossPercent/100)))
-    result.stopLossPrice = stopLossPrice
-
-    // Calculate stopLossStatus
-    const dangerPercent = 10
-    const dangerPrice = (stopLossPrice * (dangerPercent/100)) + stopLossPrice
-    const warningPercent = 25
-    const warningPrice = (stopLossPrice * (warningPercent/100)) + stopLossPrice
-    var stopLossStatus = ""
-    if (currentPrice <= stopLossPrice) {
-        stopLossStatus = "breached"
-    } else if (currentPrice <= dangerPrice) {
-        stopLossStatus = "danger"
-    } else if (currentPrice <= warningPrice) {
-        stopLossStatus = "warning"
-    } else {
-        stopLossStatus = "active"
-    }
-    result.stopLossStatus = stopLossStatus
-
-    return result
 }
 
 const noHoldingErrorResponse = async () => {
